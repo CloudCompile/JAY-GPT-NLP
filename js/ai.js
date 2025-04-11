@@ -2,14 +2,14 @@ const HF_API_KEY = "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";
 
 export async function getAIResponse(prompt) {
   try {
-    const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1", {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${HF_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ inputs: prompt })
-    });
+    const res = await fetch("https://api-inference.huggingface.co/models/gpt2", {
+       method: 'POST',
+  headers: {
+    Authorization: `Bearer ${HF_API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ inputs: prompt, parameters: { temperature: 0.2 } })
+});
 
     if (!res.ok) {
       throw new Error("Error with the Hugging Face API: " + res.statusText);
