@@ -3,13 +3,13 @@ const HF_API_KEY = "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";
 export async function getAIResponse(prompt) {
   try {
     const res = await fetch("https://api-inference.huggingface.co/models/gpt2", {
-       method: 'POST',
-  headers: {
-    Authorization: `Bearer ${HF_API_KEY}`,
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ inputs: prompt, parameters: { temperature: 0.2 } })
-});
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${HF_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ inputs: prompt })
+    });
 
     if (!res.ok) {
       throw new Error("Error with the Hugging Face API: " + res.statusText);
@@ -18,8 +18,8 @@ export async function getAIResponse(prompt) {
     const data = await res.json();
 
     // Check if the response structure is correct
-    if (data && data[0] && data[0].generated_text) {
-      return data[0].generated_text.slice(prompt.length).trim();
+    if (data && data.generated_text) {
+      return data.generated_text.slice(prompt.length).trim();
     } else {
       throw new Error("Invalid response structure from Hugging Face API");
     }
@@ -28,3 +28,4 @@ export async function getAIResponse(prompt) {
     return "Sorry, something went wrong. Please try again.";
   }
 }
+
