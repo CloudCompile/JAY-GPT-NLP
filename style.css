@@ -1,0 +1,143 @@
+/* General Body Styling */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f7fafc;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Main Container */
+.max-w-3xl {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Chat Window Styling */
+#chat {
+  height: 400px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#chat > div {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.user-msg {
+  background-color: #e0f7fa;
+  color: #00796b;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  max-width: 80%;
+  margin-left: auto;
+  word-wrap: break-word;
+}
+
+.assistant-msg {
+  background-color: #f1f1f1;
+  color: #333;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  max-width: 80%;
+  margin-right: auto;
+  word-wrap: break-word;
+}
+
+/* Input and Buttons Styling */
+input[type="text"], input[type="date"] {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: calc(100% - 90px);
+  max-width: 70%;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9;
+  transform: translateY(-3px);
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+button:focus {
+  outline: none;
+}
+
+/* Todo List Section */
+#todoSection {
+  margin-top: 30px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#todoSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+#todoList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f4f4f4;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+#todoList li button {
+  background-color: transparent;
+  color: #e74c3c;
+  border: none;
+  cursor: pointer;
+}
+
+#todoList li button:hover {
+  color: #c0392b;
+}
+
+/* Todo Input Styling */
+#todoInput, #todoDate {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: calc(100% - 90px);
+}
+
+#todoDate {
+  width: 100px;
+}
+
+/* Animation Styles */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
