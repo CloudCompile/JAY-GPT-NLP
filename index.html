@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded-2xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-4">🧠 AI Assistant</h1>
+    <div id="chat" class="h-80 overflow-y-auto space-y-2 mb-4 p-2 border rounded-md bg-gray-50"></div>
+    <div class="flex gap-2">
+      <input id="userInput" class="flex-1 p-2 border rounded-md" placeholder="Type your message..." />
+      <button id="sendBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Send</button>
+      <button id="voiceBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">🎤</button>
+    </div>
+    <div id="todoSection" class="mt-6">
+      <h2 class="text-xl font-semibold mb-2">📝 To-Do List</h2>
+      <div class="flex gap-2 mb-2">
+        <input id="todoInput" class="flex-1 p-2 border rounded-md" placeholder="Add a task..." />
+        <input id="todoDate" type="date" class="p-2 border rounded-md" />
+        <button id="addTodoBtn" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">Add</button>
+      </div>
+      <ul id="todoList" class="list-disc list-inside space-y-1"></ul>
+    </div>
+  </div>
+  
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
