@@ -270,7 +270,107 @@ function getBotResponse(message) {
         return "I don't understand. Please try again.";
     }
 }
+if (message.includes('show image of')) {
+  const imageSearch = message.split('show image of ')[1].trim();
+  const imageUrl = `https://source.unsplash.com/400x300/?${imageSearch}`; // Simple image API (Unsplash)
+  appendImage(imageUrl);
+  return `Here's an image of ${imageSearch}.`;
+} else if (message.includes('search for')) {
+  const searchQuery = message.split('search for ')[1].trim();
+  const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
+  appendLink(searchUrl, `Search results for ${searchQuery}`);
+  return `Here are some search results for ${searchQuery}.`;
+} else if (message.includes('calculate')) {
+  try {
+      const result = eval(message.split('calculate ')[1]); // Use eval for basic calculations (use with caution!)
+      return `The result is: ${result}`;
+  } catch (error) {
+      return "I couldn't perform that calculation.";
+  }
+} else if (message.includes('set reminder')) {
+  const reminderText = message.split('set reminder ')[1].trim();
+  setReminder(reminderText);
+  return `Reminder set for: ${reminderText}`;
+} else if (message.includes('play sound')) {
+  playSound();
+  return "Playing a sound.";
+} else if (message.includes('what is my location')) {
+getLocation();
+return "Getting your location...";
+}
 
+// ... (rest of the response logic) ...
+
+
+// New Helper Functions:
+
+function appendImage(imageUrl) {
+const imageElement = document.createElement('img');
+imageElement.src = imageUrl;
+chatLog.appendChild(imageElement);
+chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function appendLink(url, text) {
+const linkElement = document.createElement('a');
+linkElement.href = url;
+linkElement.textContent = text;
+linkElement.target = "_blank"; // Open in new tab
+chatLog.appendChild(linkElement);
+chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function setReminder(reminderText) {
+setTimeout(() => {
+appendMessage("Bot", `Reminder: ${reminderText}`);
+}, 5000); // 5 seconds
+}
+
+function playSound() {
+const audio = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3');
+audio.play();
+}
+
+function getLocation() {
+if (navigator.geolocation) {
+navigator.geolocation.getCurrentPosition(showPosition, showError);
+} else {
+appendMessage("Bot", "Geolocation is not supported by this browser.");
+}
+}
+
+function showPosition(position) {
+appendMessage("Bot", `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
+}
+
+function showError(error) {
+let errorMessage;
+switch(error.code) {
+case error.PERMISSION_DENIED:
+errorMessage = "User denied the request for Geolocation.";
+break;
+case error.POSITION_UNAVAILABLE:
+errorMessage = "Location information is unavailable.";
+break;
+case error.TIMEOUT:
+errorMessage = "The request to get user location timed out.";
+break;
+case error.UNKNOWN_ERROR:
+errorMessage = "An unknown error occurred.";
+break;
+}
+appendMessage("Bot", errorMessage);
+}
+function clearChatHistory() {
+    chatHistory = [];
+    localStorage.removeItem('chatHistory');
+    chatLog.innerHTML = '';
+}
+function clearChat() {
+    chatHistory = [];
+    localStorage.removeItem('chatHistory');
+    chatLog.innerHTML = '';
+}
 sendButton.addEventListener('click', () => {
     const message = userInput.value;
     if (message.trim() !== '') {
