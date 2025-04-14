@@ -1,33 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WebBot Chat</title>
-  <link rel="stylesheet" href="style.css" />
+    <title>Gemini-Inspired Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="chat-container">
-    <div id="chat-box"></div>
-    <div id="typing-indicator">WebBot is thinking<span class="dots">...</span></div>
-    <input type="text" id="user-input" placeholder="Type or speak..." />
-    <div class="buttons">
-      <button onclick="sendMessage()">Send</button>
-      <button onclick="startListening()">🎤</button>
-      <button onclick="clearChat()">🗑️</button>
-      <button onclick="exportChat()">📤 Export</button>
+    <div id="chat-window">
+        <div id="chat-log"></div>
+        <div id="input-area">
+            <input type="text" id="user-input">
+            <button id="send-button">Send</button>
+        </div>
     </div>
-    <div class="theme-picker">
-      <label>🎨 Theme:
-        <select onchange="toggleTheme(this.value)">
-          <option value="">Default</option>
-          <option value="dark">Dark</option>
-          <option value="retro">Retro</option>
-          <option value="neon">Neon</option>
-        </select>
-      </label>
-    </div>
-  </div>
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

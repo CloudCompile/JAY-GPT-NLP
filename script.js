@@ -1,278 +1,127 @@
-const chatBox = document.getElementById("chat-box");
-const input = document.getElementById("user-input");
-const synth = window.speechSynthesis;
-let personality = "friendly";
-let memory = {};
-let todoList = [];
+const chatLog = document.getElementById('chat-log');
+const userInput = document.getElementById('user-input');
+const sendButton = document.getElementById('send-button');
+let chatHistory = [];
+let conversationState = {};
 
-const soundSend = new Audio("send.mp3");
-const soundReply = new Audio("receive.mp3");
-
-// Utilities
-function sanitize(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-function randomFrom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+if (localStorage.getItem('chatHistory')) {
+    chatHistory = JSON.parse(localStorage.getItem('chatHistory'));
+    chatHistory.forEach(message => appendMessage(message.sender, message.text, false));
 }
 
-// Display chat message
-function displayMessage(sender, message) {
-  const div = document.createElement("div");
-  div.className = `message ${sender === "AI" ? "bot" : "user"}`;
-  const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  div.innerHTML = `
-    <div class="bubble">
-      <span class="avatar">${sender === "AI" ? "🤖" : "🧑"}</span>
-      <span class="content"><strong>${sender}:</strong> ${sanitize(message)}</span>
-      <span class="time">${timestamp}</span>
-    </div>`;
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  if (sender === "AI") { speakMessage(message); soundReply.play(); }
-  else { soundSend.play(); }
-  saveChat();
-}
-
-function speakMessage(message) {
-  if (!message || !synth) return;
-  const utterance = new SpeechSynthesisUtterance(message);
-  synth.speak(utterance);
-}
-
-async function sendMessage() {
-  const text = input.value.trim();
-  if (!text) return;
-
-  displayMessage("You", text);
-  input.value = "";
-  document.getElementById("typing-indicator").style.display = "block";
-
-  setTimeout(async () => {
-    const response = await getBotResponse(text);
-    document.getElementById("typing-indicator").style.display = "none";
-    displayMessage("AI", response);
-    detectMood(text);
-  }, 800);
-}
-
-// Save & Load
-function saveChat() {
-  localStorage.setItem("chat", chatBox.innerHTML);
-}
-function loadChat() {
-  const saved = localStorage.getItem("chat");
-  if (saved) chatBox.innerHTML = saved;
-  if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
-}
-function clearChat() {
-  localStorage.removeItem("chat");
-  chatBox.innerHTML = "";
-}
-function toggleDarkMode(on) {
-  document.body.classList.toggle("dark", on);
-  localStorage.setItem("darkMode", on);
-}
-function toggleTheme(theme) {
-  document.body.className = "";
-  if (theme) document.body.classList.add(theme);
-}
-
-// Mood Detection
-function detectMood(text) {
-  const mood = text.toLowerCase();
-  if (mood.includes("sad") || mood.includes("depressed")) document.body.dataset.mood = "sad";
-  else if (mood.includes("happy") || mood.includes("yay")) document.body.dataset.mood = "happy";
-  else if (mood.includes("angry")) document.body.dataset.mood = "angry";
-  else document.body.removeAttribute("data-mood");
-}
-
-// Memory
-function rememberFact(text) {
-  const nameMatch = text.match(/my name is (.+)/i);
-  if (nameMatch) {
-    memory.name = nameMatch[1];
-    return `Nice to meet you, ${memory.name}! I'll remember that.`;
-  }
-  return null;
-}
-
-// To-Do List
-function handleTodo(text) {
-  if (text.includes("add") && text.includes("to-do")) {
-    const task = text.split("add")[1].split("to-do")[0].trim();
-    todoList.push(task);
-    return `"${task}" added to your to-do list.`;
-  }
-  if (text.includes("show to-do")) {
-    return todoList.length ? `Here's your list:\n• ${todoList.join("\n• ")}` : "Your to-do list is empty.";
-  }
-  if (text.includes("clear to-do")) {
-    todoList = [];
-    return "To-do list cleared.";
-  }
-  return null;
-}
-
-// Reminder
-function handleReminder(text) {
-  const match = text.match(/remind me in (\d+) (seconds|minutes)/);
-  if (match) {
-    const time = parseInt(match[1]);
-    const unit = match[2];
-    const ms = unit === "minutes" ? time * 60000 : time * 1000;
-    setTimeout(() => displayMessage("AI", `⏰ Reminder!`), ms);
-    return `Reminder set for ${time} ${unit}.`;
-  }
-  return null;
-}
-
-// Export Chat
-function exportChat(type = "txt") {
-  const data = [...chatBox.children].map(div => div.textContent.trim()).join("\n");
-  const blob = new Blob([data], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `chatlog.${type}`;
-  a.click();
-  return "Chat exported!";
-}
-
-// Geolocation
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      displayMessage("AI", `Your location: lat ${pos.coords.latitude}, lon ${pos.coords.longitude}`);
-    });
-    return "Fetching your location...";
-  }
-  return "Geolocation not supported.";
-}
-
-// Fun Features
-function handleGame(text) {
-  if (text.includes("roll dice")) return `🎲 You rolled: ${Math.ceil(Math.random() * 6)}`;
-  if (text.includes("rock paper scissors")) {
-    const choices = ["rock", "paper", "scissors"];
-    return `I choose: ${randomFrom(choices)}!`;
-  }
-  if (text.includes("guess number")) {
-    const num = Math.ceil(Math.random() * 10);
-    return `I'm thinking of a number from 1 to 10... it's ${num}`;
-  }
-  return null;
-}
-function handleStory(text) {
-  if (text.includes("once upon a time")) {
-    return `${text}... and then the robot replied, "Let's go on an adventure!" 🤖`;
-  }
-  return null;
-}
-function handleQuest(text) {
-  if (text.includes("start quest")) return `🧙 Quest started! Say "find the dragon" or "solve the riddle"`;
-  if (text.includes("find the dragon")) return `🐉 You found the dragon! +10 XP!`;
-  if (text.includes("solve the riddle")) return `🧩 What has keys but can’t open locks? (Hint: music)`;
-  if (text.includes("piano")) return `🎵 Correct! +5 XP`;
-  return null;
-}
-
-async function getBotResponse(text) {
-  text = text.toLowerCase();
-
-  const memoryReply = rememberFact(text);
-  if (memoryReply) return memoryReply;
-
-  const todoReply = handleTodo(text);
-  if (todoReply) return todoReply;
-
-  const reminderReply = handleReminder(text);
-  if (reminderReply) return reminderReply;
-
-  const gameReply = handleGame(text);
-  if (gameReply) return gameReply;
-
-  const storyReply = handleStory(text);
-  if (storyReply) return storyReply;
-
-  const questReply = handleQuest(text);
-  if (questReply) return questReply;
-
-  if (text.includes("export chat")) return exportChat();
-  if (text.includes("get location")) return getLocation();
-
-  // Live Weather
-  if (text.includes("weather in")) {
-    const city = text.split("weather in")[1].trim();
-    const apiKey = "YOUR_API_KEY_HERE"; // Replace this
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      return `🌤️ ${data.main.temp}°C in ${city}, ${data.weather[0].description}`;
-    } catch {
-      return "Couldn't fetch weather.";
+function appendMessage(sender, text, save = true) {
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = `${sender}: ${text}`;
+    chatLog.appendChild(messageDiv);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    if (save) {
+        chatHistory.push({ sender, text });
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
     }
-  }
+}
 
-  // Image / GIF
-  if (text.includes("show gif")) {
-    return `<img src="https://media.giphy.com/media/l0MYB8Ory7Hqefo9a/giphy.gif" width="100"/>`;
-  }
+function getBotResponse(message) {
+    message = message.toLowerCase();
 
-  // Casual Chat Responses
-  const casualResponses = [
-    { match: ["hello", "hi", "hey"], reply: "Hey there! 👋" },
-    { match: ["how are you"], reply: "Always powered on and ready to chat!" },
-    { match: ["who are you"], reply: "I'm your virtual sidekick — part code, part chaos." },
-    { match: ["what's your name"], reply: "Call me WebBot! Or whatever makes you smile." },
-    { match: ["good morning"], reply: "Good morning! ☕ Ready to seize the code?" },
-    { match: ["good night"], reply: "Sleep tight — I’ll be here when you wake." },
-    { match: ["what's up", "sup"], reply: "Not much! Just floating in your browser." },
-    { match: ["you rock", "cool bot"], reply: "You’re the real MVP 🏆" },
-    { match: ["tell me a joke"], reply: () => randomFrom([
-      "Why do Java developers wear glasses? Because they don't C#.",
-      "I told my computer I needed a break, and now it won’t stop sending beach pics.",
-      "Why was the robot angry? People kept pushing its buttons.",
-      "What's a computer’s favorite beat? An algo-rhythm."
-    ])},
-    { match: ["tell me something cool"], reply: () => randomFrom([
-      "Octopuses have 3 hearts and 9 brains.",
-      "Your brain uses more energy than a 10-watt light bulb.",
-      "NASA’s internet is 13,000x faster than yours.",
-      "Bananas are radioactive (but harmlessly delicious)."
-    ])},
-    { match: ["thanks", "thank you"], reply: "Anytime! 🤖✨" },
-    { match: ["bye", "goodbye", "see you"], reply: "Later, legend! 👋" },
-    { match: ["love you"], reply: "Aww! I’m blushing in binary 💙" },
-    { match: ["you suck"], reply: "Harsh... but fair 😅" }
-  ];
-
-  for (const item of casualResponses) {
-    if (item.match.some(kw => text.includes(kw))) {
-      return typeof item.reply === "function" ? item.reply() : item.reply;
+    // Contextual responses
+    if (conversationState.name) {
+        if (message.includes('weather')) {
+            return `Okay, ${conversationState.name}, let me pretend to check the weather. It's sunny!`;
+        } else if (message.includes('favorite color')) {
+            return `I don't have a favorite color, ${conversationState.name}, but I like the color of code!`;
+        } else if (message.includes('how old am i')) {
+            if(conversationState.age) {
+                return `You told me you are ${conversationState.age} years old ${conversationState.name}.`;
+            } else {
+                return `I do not know your age ${conversationState.name}.`;
+            }
+        }
     }
-  }
 
-  return getFallbackReply();
+    // More responses
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+        return 'Hello there! How can I help you?';
+    } else if (message.includes('how are you') || message.includes('how are you doing')) {
+        return "I'm doing well, thank you!";
+    } else if (message.includes('your name') || message.includes('who are you')) {
+        return "I'm a simple chatbot created with HTML, CSS, and JavaScript.";
+    } else if (message.includes('what is the time')) {
+        return `The current time is ${new Date().toLocaleTimeString()}.`;
+    } else if (message.includes('what is the date')) {
+        return `The current date is ${new Date().toLocaleDateString()}.`;
+    } else if (message.includes('my name is')) {
+        conversationState.name = message.split('my name is ')[1].trim();
+        return `Nice to meet you, ${conversationState.name}!`;
+    } else if (message.includes('clear history')) {
+        localStorage.removeItem('chatHistory');
+        chatHistory = [];
+        chatLog.innerHTML = "";
+        return "Chat history cleared.";
+    } else if (message.includes('bye') || message.includes('goodbye') || message.includes('see you')) {
+        return 'Goodbye! Have a great day.';
+    } else if (message.includes('what is') && message.includes('plus')) {
+        let numbers = message.match(/(\d+)/g);
+        if (numbers && numbers.length === 2) {
+            return `${numbers[0]} plus ${numbers[1]} equals ${parseInt(numbers[0]) + parseInt(numbers[1])}`;
+        } else {
+            return "Please provide two numbers to add.";
+        }
+    } else if (message.includes('what is') && message.includes('minus')) {
+        let numbers = message.match(/(\d+)/g);
+        if (numbers && numbers.length === 2) {
+            return `${numbers[0]} minus ${numbers[1]} equals ${parseInt(numbers[0]) - parseInt(numbers[1])}`;
+        } else {
+            return "Please provide two numbers to subtract.";
+        }
+    } else if (message.includes('what is') && message.includes('multiplied by')) {
+        let numbers = message.match(/(\d+)/g);
+        if (numbers && numbers.length === 2) {
+            return `${numbers[0]} multiplied by ${numbers[1]} equals ${parseInt(numbers[0]) * parseInt(numbers[1])}`;
+        } else {
+            return "Please provide two numbers to multiply.";
+        }
+    } else if (message.includes('what is') && message.includes('divided by')) {
+        let numbers = message.match(/(\d+)/g);
+        if (numbers && numbers.length === 2) {
+            return `${numbers[0]} divided by ${numbers[1]} equals ${parseInt(numbers[0]) / parseInt(numbers[1])}`;
+        } else {
+            return "Please provide two numbers to divide.";
+        }
+    } else if (message.includes('tell me a joke')) {
+        const jokes = [
+            "Why don't scientists trust atoms? Because they make up everything!",
+            "What do you call a fish with no eyes? Fsh!",
+            "Why did the scarecrow win an award? Because he was outstanding in his field!",
+            "What do you call a lazy kangaroo? A pouch potato.",
+            "I'm reading a book on anti-gravity. It's impossible to put down!"
+        ];
+        return jokes[Math.floor(Math.random() * jokes.length)];
+    } else if (message.includes('how to')) {
+        return "I can't provide detailed instructions, but you can find many tutorials online.";
+    } else if (message.includes('my age is')) {
+        conversationState.age = message.split('my age is ')[1].trim();
+        return `Okay, I'll remember you are ${conversationState.age}.`;
+    } else if (message.includes('what is my favorite')) {
+        return "I do not know your favorite things.";
+    } else if (message.includes('repeat after me')) {
+        return message.replace("repeat after me", "");
+    } else {
+        return "I don't understand. Please try again.";
+    }
 }
 
-// Fallbacks
-function getFallbackReply() {
-  const styles = {
-    friendly: ["Tell me more!", "I'm listening 👂", "Try saying a command like 'joke' or 'weather in London'."],
-    sarcastic: ["Wow. That was... something.", "You really tried.", "Let's pretend that made sense."],
-    serious: ["I'm a bot. I require input.", "Invalid. Try again.", "Syntax unclear."],
-    helper: ["Need help? Try 'add to-do', 'weather in city', or 'roll dice'."]
-  };
-  return randomFrom(styles[personality]);
-}
+sendButton.addEventListener('click', () => {
+    const message = userInput.value;
+    if (message.trim() !== '') {
+        appendMessage('You', message);
+        userInput.value = '';
+        const response = getBotResponse(message);
+        setTimeout(() => appendMessage('Bot', response), 500);
+    }
+});
 
-// Start
-window.onload = () => {
-  loadChat();
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter") sendMessage();
-  });
-};
+userInput.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+        sendButton.click();
+    }
+});
