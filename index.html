@@ -3,18 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Chatbot</title>
+  <title>WebBot Chat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="chat-container">
     <div id="chat-box"></div>
-    <div id="typing-indicator" style="display: none;">AI is thinking...</div>
+    <div id="typing-indicator">WebBot is thinking<span class="dots">...</span></div>
     <input type="text" id="user-input" placeholder="Type or speak..." />
     <div class="buttons">
       <button onclick="sendMessage()">Send</button>
       <button onclick="startListening()">🎤</button>
       <button onclick="clearChat()">🗑️</button>
+      <button onclick="exportChat()">📤 Export</button>
+    </div>
+    <div class="theme-picker">
+      <label>🎨 Theme:
+        <select onchange="toggleTheme(this.value)">
+          <option value="">Default</option>
+          <option value="dark">Dark</option>
+          <option value="retro">Retro</option>
+          <option value="neon">Neon</option>
+        </select>
+      </label>
     </div>
   </div>
   <script src="script.js"></script>
