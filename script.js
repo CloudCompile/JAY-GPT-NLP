@@ -1,6 +1,56 @@
+// Simple Chatbot with Voice Input and Output
 const chatLog = document.getElementById('chat-log');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
+const voiceInputButton = document.getElementById('voice-input-button');
+const voiceOutputButton = document.getElementById('voice-output-button');
+let chatHistory = [];
+let conversationState = {};
+
+// ... (rest of the code from previous example) ...
+
+// Voice Input
+if ('webkitSpeechRecognition' in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+
+    voiceInputButton.addEventListener('click', () => {
+        recognition.start();
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        sendButton.click();
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        appendMessage('Bot', 'Voice input error.');
+    };
+} else {
+    voiceInputButton.disabled = true;
+    appendMessage('Bot', 'Voice input not supported.');
+}
+
+// Voice Output
+if ('speechSynthesis' in window) {
+    voiceOutputButton.addEventListener('click', () => {
+        const lastBotMessage = chatLog.lastElementChild.textContent.split('Bot: ')[1];
+        if (lastBotMessage) {
+            const utterance = new SpeechSynthesisUtterance(lastBotMessage);
+            speechSynthesis.speak(utterance);
+        } else {
+            appendMessage('Bot', 'No message to speak.');
+        }
+    });
+} else {
+    voiceOutputButton.disabled = true;
+    appendMessage('Bot', 'Voice output not supported.');
+}
+
+
 let chatHistory = [];
 let conversationState = {};
 
