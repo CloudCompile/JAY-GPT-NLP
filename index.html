@@ -12,9 +12,9 @@
     <div id="typing-indicator" style="display: none;">AI is thinking...</div>
     <input type="text" id="user-input" placeholder="Type or speak..." />
     <div class="buttons">
-      <button onclick="sendMessage()">Send</button>
-      <button onclick="startListening()">🎤</button>
-      <button onclick="clearChat()">🗑️</button>
+      <button type="button" onclick="sendMessage()">Send</button>
+      <button type="button" onclick="startListening()" aria-label="Start Listening">🎤</button>
+      <button type="button" onclick="clearChat()" aria-label="Clear Chat">🗑️</button>
     </div>
   </div>
   <script src="script.js"></script>
