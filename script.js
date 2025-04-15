@@ -1,6 +1,5 @@
 const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("user-input");
-const synth = window.speechSynthesis;
 
 function displayMessage(sender, message) {
   const div = document.createElement("div");
@@ -26,22 +25,6 @@ function sendMessage() {
     const response = getBotResponse(text);
     displayMessage("AI", response);
   }, 800);
-}
-
-function startListening() {
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = "en-US";
-  recognition.start();
-  recognition.onresult = (e) => {
-    input.value = e.results[0][0].transcript;
-    sendMessage();
-  };
-}
-
-function speakMessage(msg) {
-  if (!msg || !synth) return;
-  const utterance = new SpeechSynthesisUtterance(msg);
-  synth.speak(utterance);
 }
 
 function saveChat() {
