@@ -1,11 +1,9 @@
 const CACHE_NAME = 'JGN-APP-CACHE-V1';
 const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbt68xNMucloX2v7pefys5OLBTM7gScrbQzw&s',
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbt68xNMucloX2v7pefys5OLBTM7gScrbQzw&s'
+  'index.html',
+  'style.css',
+  'script.js',
+  'icon.png'
 ];
 
 self.addEventListener('install', event => {
