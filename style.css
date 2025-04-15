@@ -47,6 +47,12 @@ input, button {
   padding: 10px;
   font-size: 1em;
   margin-right: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+input:focus, button:focus {
+  outline: none;
+  border: 2px solid #007BFF;
 }
 
 .buttons {
@@ -64,6 +70,19 @@ body.dark .chat-container {
   color: #eee;
 }
 
+body.dark input, body.dark button {
+  background-color: #333;
+  color: white;
+  border: 1px solid #444;
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+button:focus {
+  background-color: #bbb;
+}
 body.dark input, body.dark button {
   background-color: #333;
   color: white;
